@@ -10,4 +10,4 @@ def es_primo(num, n=2):
     
 
 es_primo(33)
-es_primo(150)
+es_primo(1500)
