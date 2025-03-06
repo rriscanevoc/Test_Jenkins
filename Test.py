@@ -8,4 +8,7 @@ def es_primo(num, n=2):
         print("No es primo", n, "es divisor")
         return False
     
+
 es_primo(33)
+es_primo(100)
+es_primo(7)
