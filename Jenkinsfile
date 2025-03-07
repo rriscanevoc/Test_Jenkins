@@ -8,42 +8,32 @@ pipeline {
             }
         }
         
-        stage('Detect PR Merge') {
+        stage('Detectar archivos modificados') {
             steps {
                 script {
-                    // Obtener el mensaje del último commit
-                    def lastCommitMessage = sh(
-                        script: "git log -1 --pretty=%B",
-                        returnStdout: true
-                    ).trim()
-                    
-                    echo "Último mensaje del commit: ${lastCommitMessage}"
-                    
-                    // Verificar si es un merge de un PR
-                    if (lastCommitMessage =~ /Merge pull request #\d+/) {
-                        echo "PR Mergeado detectado, continuando con el pipeline..."
-                    } else {
-                        echo "No es un merge de PR, deteniendo pipeline."
-                        error("Pipeline detenido porque no es un merge de PR.")
-                    }
-                }
-            }
-        }
-        
-        stage('Show Changed Files') {
-            steps {
-                script {
+                    echo "🔍 Detectando cambios en el repositorio..."
+
+                    // Mostrar información de la rama en la que se ejecuta el pipeline
+                    echo "🌿 Rama actual: ${env.BRANCH_NAME}"
+                    echo "📌 Rama origen (PR): ${env.CHANGE_BRANCH}"
+                    echo "🎯 Rama destino (PR): ${env.CHANGE_TARGET}"
+
+                    // Obtener lista de archivos modificados en el último commit
                     def changedFiles = sh(
                         script: "git diff --name-status HEAD~1 HEAD",
                         returnStdout: true
                     ).trim()
-                    
-                    echo "Archivos modificados en el merge:"
-                    echo "${changedFiles}"
-                    
-                    // Guardar lista de archivos para uso posterior
-                    writeFile file: 'changed-files.txt', text: changedFiles
-                    archiveArtifacts artifacts: 'changed-files.txt', fingerprint: true
+
+                    if (changedFiles) {
+                        echo "Archivos modificados en el último push:"
+                        echo "${changedFiles}"
+                        
+                        // Guardar en un archivo
+                        writeFile file: 'changed-files.txt', text: changedFiles
+                        archiveArtifacts artifacts: 'changed-files.txt', fingerprint: true
+                    } else {
+                        echo "No se detectaron cambios en archivos."
+                    }
                 }
             }
         }
