@@ -8,47 +8,49 @@ pipeline {
             }
         }
         
-        stage('Show Changed Files') {
+        stage('Detect PR Merge') {
             steps {
                 script {
-                    // Si es un PR
-                    if (env.CHANGE_ID) {
-                        echo "Pull Request #${env.CHANGE_ID} detectado"
-                        
-                        // Obtener la lista de archivos modificados
-                        def changedFiles = sh(
-                            script: "git diff --name-status origin/${env.CHANGE_TARGET} HEAD",
-                            returnStdout: true
-                        ).trim()
-                        
-                        echo "Archivos modificados en este PR:"
-                        echo "${changedFiles}"
-                        
-                        // Opcionalmente, guardar la lista de archivos para su uso posterior
-                        writeFile file: 'changed-files.txt', text: changedFiles
-                        archiveArtifacts artifacts: 'changed-files.txt', fingerprint: true
+                    // Obtener el mensaje del último commit
+                    def lastCommitMessage = sh(
+                        script: "git log -1 --pretty=%B",
+                        returnStdout: true
+                    ).trim()
+                    
+                    echo "Último mensaje del commit: ${lastCommitMessage}"
+                    
+                    // Verificar si es un merge de un PR
+                    if (lastCommitMessage =~ /Merge pull request #\d+/) {
+                        echo "PR Mergeado detectado, continuando con el pipeline..."
                     } else {
-                        echo "No es un PR, es un build regular de rama"
-                        
-                        // Para builds regulares, muestra los últimos cambios
-                        def recentChanges = sh(
-                            script: "git diff --name-status HEAD~1 HEAD",
-                            returnStdout: true
-                        ).trim()
-                        
-                        echo "Cambios recientes en esta rama:"
-                        echo "${recentChanges}"
+                        echo "No es un merge de PR, deteniendo pipeline."
+                        error("Pipeline detenido porque no es un merge de PR.")
                     }
                 }
             }
         }
         
-        // Aquí puedes añadir más etapas para tu pipeline
+        stage('Show Changed Files') {
+            steps {
+                script {
+                    def changedFiles = sh(
+                        script: "git diff --name-status HEAD~1 HEAD",
+                        returnStdout: true
+                    ).trim()
+                    
+                    echo "Archivos modificados en el merge:"
+                    echo "${changedFiles}"
+                    
+                    // Guardar lista de archivos para uso posterior
+                    writeFile file: 'changed-files.txt', text: changedFiles
+                    archiveArtifacts artifacts: 'changed-files.txt', fingerprint: true
+                }
+            }
+        }
     }
     
     post {
         always {
-            // Limpieza y notificaciones
             cleanWs()
         }
     }
