@@ -31,7 +31,7 @@ pipeline {
                     echo "📌 Rama origen (PR): ${env.CHANGE_BRANCH}"
                     echo "🎯 Rama destino (PR): ${env.CHANGE_TARGET}"
 
-}
+                   
                     // Obtener lista de archivos modificados en el último commit
                     def changedFiles = sh(
                         script: "git diff --name-status HEAD~1 HEAD",
