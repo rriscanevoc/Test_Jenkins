@@ -10,5 +10,5 @@ def es_primo(num, n=2):
     
 
 es_primo(33)
-es_primo(10)
+es_primo(100)
 
