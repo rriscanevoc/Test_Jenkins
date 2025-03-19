@@ -49,7 +49,7 @@ pipeline {
                         echo "No se detectaron cambios en archivos."
                     }
                     if (true) {
-                        
+                        echo "Excelente"
                     }else{
                         error("No hay paso.")
                     }
