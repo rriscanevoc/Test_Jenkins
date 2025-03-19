@@ -56,11 +56,6 @@ pipeline {
     post {
         always {
             cleanWs()
-            echo " Despliegue completado exitosamente"
-            githubNotify context: 'Jenkins CI', status: 'SUCCESS', description: 'Build exitoso'
-            
-            //echo " El despliegue falló"
-            //githubNotify context: 'Jenkins CI', status: 'FAILURE', description: 'El build falló'   
         }
     }
 
