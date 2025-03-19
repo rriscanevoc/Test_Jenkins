@@ -48,7 +48,7 @@ pipeline {
                     } else {
                         echo "No se detectaron cambios en archivos."
                     }
-                    if (true) {
+                    if (false) {
                         echo "Excelente"
                     }else{
                         error("No hay paso.")
