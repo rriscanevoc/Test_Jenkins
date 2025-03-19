@@ -13,7 +13,7 @@ pipeline {
                 script {
                     try {
                         sh 'git-secrets --scan'
-                    } catch (Exception e) {
+                    }catch (Exception e) {
                         echo "Se encontraron secretos en el código. Revisa antes de continuar."
                         error("Pipeline detenido por exposición de credenciales.")
                     }
@@ -48,6 +48,12 @@ pipeline {
                     } else {
                         echo "No se detectaron cambios en archivos."
                     }
+                    if (true) {
+                        
+                    }else{
+                        error("No hay paso.")
+                    }
+
                 }
             }
         }
